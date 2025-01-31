@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <!-- Imagen -->
+    <ImageView
+        android:id="@+id/ivApproval"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/aprovado"
+        android:contentDescription="Aprovado"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Mensaje de Aprobado -->
+    <TextView
+        android:id="@+id/tvApproved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aprobado"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Monto -->
+    <TextView
+        android:id="@+id/tvAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Monto: 0.00"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Referencia -->
+    <TextView
+        android:id="@+id/tvReference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Referencia: N/A"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Botón -->
+    <Button
+        android:id="@+id/btnAccept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aceptar"
+        android:textColor="@android:color/white"/>
+</LinearLayout>

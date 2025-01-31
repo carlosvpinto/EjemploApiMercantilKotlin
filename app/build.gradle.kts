@@ -33,6 +33,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
@@ -51,6 +55,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.1") // La versión puede variar
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    dependencies {
+        implementation ("androidx.fragment:fragment-ktx:1.6.1") // Revisa la última versión
+    }
 
     // Para usar @SerializedName
     implementation("com.google.code.gson:gson:2.8.9")

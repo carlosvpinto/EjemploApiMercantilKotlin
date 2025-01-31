@@ -1,20 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnBotonApi"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Solicitud API"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Campo para el número de cuenta -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Número de Cuenta:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etAccountNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese el número de cuenta"
+            android:inputType="number"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Campo para el ID del cliente -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID del Cliente:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etCustomerId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese el ID del cliente"
+            android:inputType="text"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Campo para la fecha de la transacción -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha de Transacción:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etTransactionDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="YYYY-MM-DD"
+            android:inputType="date"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Campo para el ID del banco -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID del Banco:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etBankId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese el ID del banco"
+            android:inputType="number"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Campo para la referencia de pago -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Referencia de Pago:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etPaymentReference"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese la referencia de pago"
+            android:inputType="number"
+            android:maxLines="1"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Campo para el monto -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monto:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese el monto"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Botón para enviar el formulario -->
+        <Button
+            android:id="@+id/btnBotonApi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar"
+            android:textSize="18sp"
+
+            android:textColor="@android:color/white"/>
+
+        <!-- Contenedor para el Fragment -->
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>
