@@ -2,12 +2,19 @@ package com.carlosvpinto.pagomovilmercantil
 
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils.replace
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import com.carlosvpinto.pagomovilmercantil.Constants.clientId
+import com.carlosvpinto.pagomovilmercantil.Constants.merchantId
+import com.carlosvpinto.pagomovilmercantil.Constants.secretKey
+import com.carlosvpinto.pagomovilmercantil.Constants.terminalId
 import com.carlosvpinto.pagomovilmercantil.databinding.ActivityMainBinding
 import com.carlosvpinto.pagomovilmercantil.model.BodySolicitudApiModel
 import com.carlosvpinto.pagomovilmercantil.model.ClientIdentify
@@ -36,11 +43,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     // Simular datos del API
-    private val merchantId = 11103402
-    private val integratorId = 31
-    private val terminalId = "abcde"
-    private val clientId = "17ebe62df9a1ca008b912ddd92f3d486"
-    private val secretKey = "0011103402J000000405660872000000000000"
     private val TAG = "MainActivity"
 
 
@@ -50,26 +52,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        val btnBotonApi = findViewById<Button>(R.id.btnBotonApi)
-
         // Configurar el clic del botón
         binding.btnBotonApi.setOnClickListener {
             // Ejecutar la función para llamar a la API
             callApiFromButton()
-            // Mostrar el Fragment con la respuesta
-            //showResponseFragment("apiResponse Valor del response")
-            // Crear un mensaje personalizado
-            // Simular una respuesta de la API
-            val approved = "Aprobado"
-            val amount = "1400.00"
-            val reference = "0025509602566"
-            val imageResId = R.drawable.negado // Imagen desde recursos
 
-            // Mostrar el diálogo de aprobación con los 4 valores
-            showApprovalDialog(approved, amount, reference, imageResId)
         }
         llenarFormulario()
+
+        setAutoDecimalFormat(binding.etAmount)
     }
 
     private fun llenarFormulario() {
@@ -87,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         approved: String,
         amount: String,
         reference: String,
-        imageResId: Int
+        imageResId: Int,
     ) {
         val dialog = ApprovalDialogFragment.newInstance(approved, amount, reference, imageResId)
         dialog.show(supportFragmentManager, "ApprovalDialog")
@@ -124,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val response =
-                    callApi(data, merchantId, integratorId, terminalId, clientId, secretKey)
+                    callApi(data, merchantId, Constants.integratorId, terminalId, clientId, secretKey)
 
                 Log.d("MainActivity", "API response: $response")
             } catch (e: Exception) {
@@ -141,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         integratorId: Int,
         terminalId: String,
         clientId: String,
-        secretKey: String
+        secretKey: String,
     ): Any {
         // Crear el cuerpo de la solicitud utilizando el nuevo modelo BodySolicitudApiModel
         val bodySolicitud = BodySolicitudApiModel(
@@ -170,8 +161,7 @@ class MainActivity : AppCompatActivity() {
         val jsonBody = Gson().toJson(bodySolicitud)
         Log.d("MainActivity", "Request body: $jsonBody")
 
-        val url =
-            URL("https://apimbu.mercantilbanco.com/mercantil-banco/sandbox/v1/payment/transfer-search")
+        val url = URL(Constants.API_URL)
         val connection = withContext(Dispatchers.IO) { url.openConnection() as HttpURLConnection }
 
         return withContext(Dispatchers.IO) {
@@ -187,30 +177,28 @@ class MainActivity : AppCompatActivity() {
             }
 
             val responseCode = connection.responseCode
-            Log.d(TAG, "callApi: responseCode $responseCode")
+            Log.d(TAG, "callApi: Respuesra Api: $responseCode")
             if (responseCode == HttpURLConnection.HTTP_OK) {
 
                 val response = connection.inputStream.use { inputStream ->
                     inputStream.reader().use { it.readText() }
                 }
 
-                val jsonResponse = JSONObject(response)
 
-                Log.d(TAG, "callApi: Paso por jsonResponse $jsonResponse")
-                if (jsonResponse.has("errorList")) {
-                    Log.d(TAG, "callApi: Paso por Errorlist")
-                    val errorResponse = Gson().fromJson(response, ErrorResponseModel::class.java)
-                    Log.e(
-                        "MainActivity",
-                        "Error de API: ${errorResponse.errorList[0]?.description}"
-                    )
-                    errorResponse
-                } else {
                     Log.d(TAG, "callApi: paso por success")
                     val successResponse =
                         Gson().fromJson(response, SuccessResponseModel::class.java)
-                    successResponse
-                }
+                    Log.d(TAG, "callApi: Respuesta Success  successResponse: $successResponse")
+                     successResponse
+                    // Mostrar el diálogo de aprobación con los 4 valores
+                    val imageResId = R.drawable.aprovado
+                    showApprovalDialog(
+                        "Aprobado",
+                        bodySolicitud.transferSearchBy.amount,
+                        bodySolicitud.transferSearchBy.paymentReference,
+                        imageResId
+                    )
+
 
             } else {
                 // Captura la respuesta del servidor en caso de error
@@ -222,6 +210,14 @@ class MainActivity : AppCompatActivity() {
                 val errorResponseModel =
                     Gson().fromJson(errorResponse, ErrorResponseModel::class.java)
 
+                //LLama a la Dialogo para informa repuesta incorrecta
+                val imageResId = R.drawable.negado
+                showApprovalDialog(
+                    "Negado",
+                    errorResponseModel.errorList[0].description,
+                    bodySolicitud.transferSearchBy.paymentReference,
+                    imageResId
+                )
                 // Obtén el valor de "description" del primer error en la lista
                 val errorDescription = errorResponseModel.errorList?.firstOrNull()?.description
                     ?: "Error desconocido"
@@ -254,5 +250,52 @@ class MainActivity : AppCompatActivity() {
 
         // Convertir el resultado a Base64
         return Base64.getEncoder().encodeToString(encryptedBytes)
+    }
+
+
+    fun setAutoDecimalFormat(editText: EditText) {
+        editText.addTextChangedListener(object : TextWatcher {
+            private var isFormatting = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(editable: Editable?) {
+                if (isFormatting) return // Evita bucles infinitos
+
+                isFormatting = true
+
+                val input = editable?.toString() ?: ""
+
+                // Elimina todos los caracteres que no sean números
+                val cleanString = input.replace(Regex("[^\\d]"), "")
+
+                // Si no hay entrada, muestra "0.00"
+                if (cleanString.isEmpty()) {
+                    editable?.replace(0, editable.length, "0.00")
+                    isFormatting = false
+                    return
+                }
+
+                // Asegura que siempre haya al menos 3 dígitos (1 entero y 2 decimales)
+                val paddedString = cleanString.padStart(3, '0')
+
+                // Divide en parte entera y decimal
+                val integerPart = paddedString.dropLast(2).toInt() // Elimina ceros a la izquierda
+                val decimalPart = paddedString.takeLast(2)
+
+                // Formatea el número con el punto y dos decimales, sin ceros a la izquierda
+                val formattedText = "$integerPart.$decimalPart"
+
+                // Actualiza el texto en el EditText
+                editable?.replace(0, editable.length, formattedText)
+
+                // Mueve el cursor al final
+                editText.setSelection(formattedText.length)
+
+                isFormatting = false
+            }
+        })
     }
 }
